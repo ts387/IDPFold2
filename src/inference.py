@@ -134,9 +134,13 @@ class GenerationDataset(Dataset):
         else:
             seq_data = []
             for i, row in df.iterrows():
-                names = row['test_case'].split(':')
+                name = row['test_case']
                 sequences = row['sequence'].split(':')
-                seq_data.extend([(names[j], sequences[j]) for j in range(len(names))])
+                if 'chain_ids' in df.columns:
+                    chain_ids = row['chain_ids'].split(':')
+                    seq_data.extend([(f"{name}_{chain_ids[j]}", sequences[j]) for j in range(len(sequences))])
+                else:
+                    seq_data.extend([(f"{name}_{j+1}", sequences[j]) for j in range(len(sequences))])
 
         batch_converter = alphabet.get_batch_converter()
         total_sequences, num_batches = len(seq_data), len(seq_data) // BATCH_SIZE + (len(seq_data) % BATCH_SIZE != 0)
