@@ -5,8 +5,6 @@ from collections import defaultdict
 from typing import Any, List
 
 import torch
-import biotite.structure.io.pdbx as pdbx
-
 import src.common.residue_constants as rc
 
 ALPHANUMERIC = string.ascii_letters + string.digits + ' '
@@ -157,6 +155,8 @@ def to_mmcif(
     }
 
     # Write mmCIF file
+    import biotite.structure.io.pdbx as pdbx
+
     os.makedirs(output_dir, exist_ok=True)
     cif_file_path = os.path.join(output_dir, f"{accession_code}.cif")
     cif_file = pdbx.PDBxFile()
