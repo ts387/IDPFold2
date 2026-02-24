@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 import random
 
-import biotite.structure.io as strucio
 from src.utils.align_utils import mean_w_mask
 from src.model.integral import ang_to_nm
 
@@ -253,6 +252,8 @@ def motif_extract(
 
     position = position.split(split_char)
     ALPHABET = "ABCDEFGHJKLMNOPQRSTUVWXYZ"
+    import biotite.structure.io as strucio
+
     if isinstance(structure_path, str):
         array = strucio.load_structure(structure_path, model=1)
     else:
