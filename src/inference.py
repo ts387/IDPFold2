@@ -267,12 +267,14 @@ def main(args: DictConfig):
             inference_dict = to_device(inference_dict, device)
 
             # assign samples to each rank
-            nsamples_per_rank = inference_dict['nsamples'] // DIST_WRAPPER.world_size
-            if DIST_WRAPPER.rank < inference_dict['nsamples'] % DIST_WRAPPER.world_size:
+            nsamples_total = int(inference_dict['nsamples'])
+            nres = int(inference_dict['nres'][0])
+            nsamples_per_rank = nsamples_total // DIST_WRAPPER.world_size
+            if DIST_WRAPPER.rank < nsamples_total % DIST_WRAPPER.world_size:
                 nsamples_per_rank += 1
 
             # split samples based on memory limit
-            nsamples_per_batch = max(1, args.max_batch_length // inference_dict['nres'][0])
+            nsamples_per_batch = max(1, args.max_batch_length // nres)
 
             nsamples_generated = 0
             batch_idx = 0
