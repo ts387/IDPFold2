@@ -175,8 +175,7 @@ class Experts(nn.Module):
         tokens_per_expert = torch.histc(top_expert, self.n_experts, 0, self.n_experts - 1)
 
         # Calculate the bin bounds for the sorted tokens.
-        if len(tokens_per_expert.size()) == 1:
-            tokens_per_expert = tokens_per_expert.view(1, -1)
+        # bins must be 1D with shape [n_experts] for binned_gather/binned_scatter
         bins = torch.cumsum(tokens_per_expert, dim=0)
         bins = bins.view(1) if not len(bins.size()) else bins
         return indices, bin_ids, bins, tokens_per_expert
@@ -217,7 +216,7 @@ class Experts(nn.Module):
 
         # Un-route the data for the MoE output.
         return binned_scatter(
-            x_out, indices, top_k, original_shape=x_shape)
+            x_out, indices, expert_weights, bins, top_k, original_shape=x_shape)
 
     def _single_expert_forward(self, x, cond, mask, expert_idx):
         """efficient forward for single expert case"""
