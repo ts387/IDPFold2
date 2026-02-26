@@ -52,6 +52,10 @@ def to_pdb_simple(
                     f"{x:8.3f}{y:8.3f}{z:8.3f}  1.00  0.00           {atom_name[0]:>2}\n"
                 )
 
+            # Write CONECT records for backbone trace
+            for i in range(1, n_res):
+                f.write(f"CONECT{i:>5}{i + 1:>5}\n")
+
             f.write("ENDMDL\n")
         f.write("END\n")
 
@@ -99,6 +103,11 @@ def to_pdb(
                     f.write(
                         f"TER   {i + 2:>5}      {resname:>3} {chain_idx}{res_idx + 1:>4}\n"
                     )
+
+            # Write CONECT records for backbone trace (skip cross-chain boundaries)
+            for i in range(n_res - 1):
+                if chain_ids[i] == chain_ids[i + 1]:
+                    f.write(f"CONECT{i + 1:>5}{i + 2:>5}\n")
 
             f.write("ENDMDL\n")
         f.write("END\n")
